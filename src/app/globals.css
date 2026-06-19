@@ -7,19 +7,35 @@
   --font-sans: "Inter", system-ui, sans-serif;
 }
 
-* {
+*, *::before, *::after {
+  box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
   background: #ffffff;
   color: #0b0b0c;
   overflow-x: hidden;
+  max-width: 100%;
+}
+
+img, video, iframe, svg {
+  max-width: 100%;
+}
+
+/* Utilities responsive */
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+}
+@media (min-width: 769px) {
+  .hide-desktop { display: none !important; }
 }
 
 ::selection {

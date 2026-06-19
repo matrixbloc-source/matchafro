@@ -57,7 +57,7 @@ export default function CategoryPage() {
       `}</style>
 
       {/* En-tête */}
-      <section style={{ padding: 'clamp(48px,6vw,80px) 40px', background: '#fff', borderBottom: `1px solid ${LINE}` }}>
+      <section style={{ padding: 'clamp(48px,6vw,80px) clamp(20px,5vw,40px)', background: '#fff', borderBottom: `1px solid ${LINE}` }}>
         <div style={SHELL}>
           <Link
             to="/#categories"
@@ -86,7 +86,7 @@ export default function CategoryPage() {
       </section>
 
       {/* Grille */}
-      <section style={{ padding: 'clamp(48px,6vw,80px) 40px' }}>
+      <section style={{ padding: 'clamp(48px,6vw,80px) clamp(20px,5vw,40px)' }}>
         <div style={SHELL}>
           {filtered.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>

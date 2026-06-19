@@ -554,7 +554,8 @@ function BookingModal({ booking, onClose }) {
       style={{
         position: 'fixed', inset: 0, zIndex: 1000,
         background: 'rgba(5,4,2,0.85)', backdropFilter: 'blur(12px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 'clamp(12px,4vw,24px)',
       }}
     >
       <motion.div
@@ -564,7 +565,10 @@ function BookingModal({ booking, onClose }) {
         style={{
           background: 'linear-gradient(160deg, #141210 0%, #0C0A08 100%)',
           border: '1px solid rgba(212,165,116,0.2)',
-          borderRadius: 28, padding: 32, width: '100%', maxWidth: 480,
+          borderRadius: 'clamp(16px,3vw,28px)',
+          padding: 'clamp(18px,4vw,32px)',
+          width: '100%', maxWidth: 480,
+          maxHeight: '90dvh', overflowY: 'auto',
           boxShadow: '0 60px 100px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,0,0,0.5)',
         }}
       >
@@ -927,19 +931,35 @@ function SmartCalendarHome({ compact = false }) {
         .sc-day-col { min-width: 90px; }
         @media (max-width: 900px) {
           .sc-sidebar { display: none !important; }
+          .sc-outer { flex-direction: column !important; }
         }
         @media (max-width: 768px) {
           .sc-desktop-grid { display: none !important; }
           .sc-mobile-view  { display: flex !important; }
           .sc-week-nav     { gap: 6px !important; }
+          .sc-header-inner { padding: 14px 18px 12px !important; }
+          .sc-search-section { padding: 10px 16px 0 !important; }
         }
         @media (min-width: 769px) {
           .sc-mobile-view { display: none !important; }
         }
+        @media (max-width: 520px) {
+          .sc-tz-badge { display: none !important; }
+          .sc-tz-sep   { display: none !important; }
+          .sc-search-row { flex-direction: column !important; }
+          .sc-flash-btn  { width: 100% !important; justify-content: center !important; }
+          .sc-week-nav   { flex-wrap: wrap !important; justify-content: center !important; padding: 10px 16px !important; }
+          .sc-week-center { order: -1 !important; width: 100% !important; text-align: center !important; margin-bottom: 4px !important; }
+          .sc-week-btn   { flex: 1 !important; justify-content: center !important; }
+        }
+        @media (max-width: 380px) {
+          .sc-clock-block { scale: 0.9; }
+          .sc-pros-counter { display: none !important; }
+        }
       `}</style>
 
       {/* ── Outer layout: calendrier + sidebar ─────────────────── */}
-      <div style={{ display: 'flex', gap: 18, alignItems: 'flex-start' }}>
+      <div className="sc-outer" style={{ display: 'flex', gap: 18, alignItems: 'flex-start' }}>
 
         {/* ── Calendrier principal ─────────────────────────────── */}
         <div style={{
@@ -952,7 +972,7 @@ function SmartCalendarHome({ compact = false }) {
         }}>
 
           {/* ── HEADER ────────────────────────────────────────── */}
-          <div style={{
+          <div className="sc-header-inner" style={{
             background: CARD,
             borderBottom: `1px solid ${LINE}`,
             padding: '18px 26px 16px',
@@ -975,21 +995,21 @@ function SmartCalendarHome({ compact = false }) {
               {/* Stats temps réel */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                 {/* Horloge */}
-                <div style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${LINE}`, borderRadius: 12, padding: '7px 14px' }}>
+                <div className="sc-clock-block" style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${LINE}`, borderRadius: 12, padding: '7px 14px' }}>
                   <LiveClock />
                 </div>
 
                 {/* Séparateur */}
-                <div style={{ width: 1, height: 28, background: LINE, flexShrink: 0 }} />
+                <div className="sc-tz-sep" style={{ width: 1, height: 28, background: LINE, flexShrink: 0 }} />
 
                 {/* Timezone */}
-                <div style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${LINE}`, borderRadius: 999, padding: '5px 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div className="sc-tz-badge" style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${LINE}`, borderRadius: 999, padding: '5px 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ fontSize: 11 }}>📍</span>
                   <span style={{ fontSize: 10, color: 'rgba(248,242,234,0.45)', fontFamily: 'Inter, sans-serif', letterSpacing: '0.03em' }}>{getTz()}</span>
                 </div>
 
                 {/* Compteur pros */}
-                <div style={{ background: CRM, border: '1px solid rgba(212,165,116,0.22)', borderRadius: 999, padding: '5px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div className="sc-pros-counter" style={{ background: CRM, border: '1px solid rgba(212,165,116,0.22)', borderRadius: 999, padding: '5px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', display: 'inline-block', flexShrink: 0, boxShadow: '0 0 6px #22C55E80' }} />
                   <span style={{ fontFamily: F, fontSize: 16, fontWeight: 500, color: BRNZ, lineHeight: 1 }}>{matchedPros.length}</span>
                   <span style={{ fontSize: 10, color: 'rgba(212,165,116,0.7)', fontFamily: 'Inter, sans-serif' }}>disponibles</span>
@@ -999,10 +1019,10 @@ function SmartCalendarHome({ compact = false }) {
           </div>
 
           {/* ── RECHERCHE + FILTRES ────────────────────────────── */}
-          <div style={{ padding: '14px 24px 0', borderBottom: `1px solid ${LINE}`, background: BG }}>
+          <div className="sc-search-section" style={{ padding: '14px 24px 0', borderBottom: `1px solid ${LINE}`, background: BG }}>
 
             {/* Search + ⚡ */}
-            <div style={{ display: 'flex', gap: 10, alignItems: 'stretch', marginBottom: 12 }}>
+            <div className="sc-search-row" style={{ display: 'flex', gap: 10, alignItems: 'stretch', marginBottom: 12 }}>
               <div style={{ position: 'relative', flex: 1 }}>
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 10,
@@ -1076,6 +1096,7 @@ function SmartCalendarHome({ compact = false }) {
 
               {/* ⚡ Premier créneau */}
               <button
+                className="sc-flash-btn"
                 onClick={bookNearest}
                 disabled={!nearest}
                 style={{
@@ -1140,7 +1161,7 @@ function SmartCalendarHome({ compact = false }) {
               fontFamily: 'Inter, sans-serif', transition: 'all 0.18s', display: 'flex', alignItems: 'center', gap: 6,
             }}>← Sem. précédente</button>
 
-            <span style={{ fontFamily: F, fontSize: 16, fontWeight: 500, color: INK, letterSpacing: '-0.03em', textAlign: 'center' }}>
+            <span className="sc-week-center" style={{ fontFamily: F, fontSize: 16, fontWeight: 500, color: INK, letterSpacing: '-0.03em', textAlign: 'center', flexShrink: 1, minWidth: 0 }}>
               {weekDays[0].toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
               {' – '}
               {weekDays[6].toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}

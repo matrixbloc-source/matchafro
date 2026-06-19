@@ -72,7 +72,7 @@ function Hero() {
     <section id="top" style={{
       position: 'relative', minHeight: '100vh',
       display: 'flex', flexDirection: 'column', justifyContent: 'center',
-      padding: 'clamp(100px,12vw,144px) 40px 80px',
+      padding: 'clamp(100px,12vw,144px) clamp(20px,5vw,40px) 80px',
       overflow: 'hidden',
     }}>
       <style>{`
@@ -80,6 +80,11 @@ function Hero() {
           .hero-search { flex-direction: column !important; }
           .hero-search .vsep { display: none !important; }
           .hero-search button { border-radius: 12px !important; margin: 0 !important; width: 100% !important; }
+        }
+        @media (max-width: 480px) {
+          .hero-trust { gap: 16px !important; flex-direction: column !important; align-items: flex-start !important; }
+          .hero-trust .trust-sep { display: none !important; }
+          .hero-ctas { gap: 16px !important; }
         }
       `}</style>
 
@@ -201,6 +206,7 @@ function Hero() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: EASE, delay: 1 }}
+          className="hero-ctas"
           style={{ marginTop: 28, display: 'flex', gap: 28, alignItems: 'center', flexWrap: 'wrap' }}
         >
           <a href="#vedettes" onClick={e => { e.preventDefault(); document.getElementById('vedettes')?.scrollIntoView({ behavior: 'smooth' }); }} style={{
@@ -220,18 +226,19 @@ function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, ease: EASE, delay: 1.2 }}
+          className="hero-trust"
           style={{ marginTop: 80, display: 'flex', gap: 40, alignItems: 'center', flexWrap: 'wrap', fontSize: 14, color: 'rgba(11,11,12,0.45)' }}
         >
           <span>
             <b style={{ fontFamily: F, fontSize: 18, fontWeight: 500, color: INK, marginRight: 6 }}>5 000+</b>
             artisans vérifiés
           </span>
-          <span style={{ height: 16, width: 1, background: LINE }} />
+          <span className="trust-sep" style={{ height: 16, width: 1, background: LINE }} />
           <span>
             <b style={{ fontFamily: F, fontSize: 18, fontWeight: 500, color: INK, marginRight: 6 }}>12</b>
             pays couverts
           </span>
-          <span style={{ height: 16, width: 1, background: LINE }} />
+          <span className="trust-sep" style={{ height: 16, width: 1, background: LINE }} />
           <span>
             <b style={{ fontFamily: F, fontSize: 18, fontWeight: 500, color: INK, marginRight: 6 }}>4,9/5</b>
             note moyenne
@@ -262,12 +269,12 @@ function ArrowIcon() {
 
 function Categories() {
   return (
-    <section id="categories" style={{ padding: 'clamp(72px,9vw,112px) 40px' }}>
+    <section id="categories" style={{ padding: 'clamp(72px,9vw,112px) clamp(20px,5vw,40px)' }}>
       <style>{`
         .cat-card:hover img { transform: scale(1.06); }
         .cat-card:hover .cat-arrow { background: #fff !important; color: ${INK} !important; border-color: #fff !important; }
-        @media (max-width: 900px) { .grid3 { grid-template-columns: 1fr !important; } }
-        @media (min-width: 600px) and (max-width: 900px) { .grid3 { grid-template-columns: 1fr 1fr !important; } }
+        @media (max-width: 900px) { .grid3 { grid-template-columns: 1fr 1fr !important; } }
+        @media (max-width: 580px) { .grid3 { grid-template-columns: 1fr !important; } }
       `}</style>
       <div style={SHELL}>
         {/* Header */}
@@ -360,15 +367,16 @@ function Featured() {
     .slice(0, 4);
 
   return (
-    <section id="vedettes" style={{ background: CREAM, padding: 'clamp(72px,9vw,112px) 40px' }}>
+    <section id="vedettes" style={{ background: CREAM, padding: 'clamp(72px,9vw,112px) clamp(20px,5vw,40px)' }}>
       <style>{`
         .pro-card:hover { transform: translateY(-4px) !important; box-shadow: 0 24px 60px -20px rgba(11,11,12,0.18) !important; }
         .pro-card:hover .pro-card-img { transform: scale(1.05) !important; }
         @media (max-width: 900px) { .grid4 { grid-template-columns: 1fr 1fr !important; } }
         @media (max-width: 580px) { .grid4 { grid-template-columns: 1fr !important; } }
+        @media (max-width: 480px) { .featured-header { flex-direction: column !important; align-items: flex-start !important; } }
       `}</style>
       <div style={SHELL}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 24, marginBottom: 56, flexWrap: 'wrap' }}>
+        <div className="featured-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 24, marginBottom: 56, flexWrap: 'wrap' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
               <span style={{ height: 1, width: 40, background: BRONZE }} />
@@ -496,7 +504,7 @@ const STEPS = [
 
 function HowItWorks() {
   return (
-    <section id="etapes" style={{ padding: 'clamp(72px,9vw,112px) 40px' }}>
+    <section id="etapes" style={{ padding: 'clamp(72px,9vw,112px) clamp(20px,5vw,40px)' }}>
       <style>{`
         .step-cell:hover { background: ${CREAM} !important; }
         .step-cell:hover .step-num { color: ${BRONZE} !important; }
@@ -556,10 +564,15 @@ function LaunchOffer() {
   const pct = Math.min((founderCount / founderLimit) * 100, 100);
 
   return (
-    <section id="offre" style={{ padding: '64px 40px' }}>
+    <section id="offre" style={{ padding: '64px clamp(20px,5vw,40px)' }}>
       <style>{`
         @keyframes ping-dot { 75%, 100% { transform: scale(2.5); opacity: 0; } }
-        @media (max-width: 700px) { .offer-grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 700px) {
+          .offer-grid { grid-template-columns: 1fr !important; gap: 36px !important; }
+        }
+        @media (max-width: 480px) {
+          .offer-grid { gap: 24px !important; }
+        }
       `}</style>
       <div style={SHELL} ref={ref}>
         <motion.div
@@ -667,7 +680,7 @@ function LaunchOffer() {
 /* ─── 6. SMART CALENDAR ─────────────────────────────────────────────────── */
 function SmartCalendarSection() {
   return (
-    <section id="calendrier" style={{ padding: 'clamp(72px,9vw,112px) 40px', background: '#0B0B0B' }}>
+    <section id="calendrier" style={{ padding: 'clamp(72px,9vw,112px) clamp(20px,5vw,40px)', background: '#0B0B0B' }}>
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
         {/* Label */}
         <motion.div

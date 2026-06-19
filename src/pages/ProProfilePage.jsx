@@ -1280,6 +1280,46 @@ const PROFILE_CSS = `
     display: none;
   }
 
+  @media (max-width: 420px) {
+    .profileHeroTop,
+    .profileHeroContent,
+    .profileGallerySection,
+    .profileContentGrid,
+    .profileProofGrid {
+      width: min(1480px, calc(100% - 20px));
+    }
+
+    .profileIdentity h1 {
+      font-size: 32px;
+    }
+
+    .profileAvatar {
+      width: 68px;
+      height: 68px;
+    }
+
+    .profileAvatar span {
+      font-size: 22px;
+    }
+
+    .profileIdentity {
+      gap: 10px;
+    }
+
+    .profileProofGrid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .profileHeroActions {
+      gap: 8px;
+    }
+
+    .profileMobileBar {
+      padding: 10px 12px;
+      gap: 8px;
+    }
+  }
+
   .profileMissing {
     min-height: 100vh;
     display: flex;

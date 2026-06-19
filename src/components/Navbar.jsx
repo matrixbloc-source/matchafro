@@ -89,7 +89,7 @@ export default function Navbar() {
         <div style={{
           maxWidth: 1240, margin: '0 auto',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '20px 40px',
+          padding: 'clamp(14px,3vw,20px) clamp(16px,4vw,40px)',
         }}>
           {/* Logo */}
           <Link to="/" style={{ textDecoration: 'none', fontFamily: F, fontSize: 24, fontWeight: 500, letterSpacing: '-0.04em', color: INK }}>
@@ -199,8 +199,7 @@ export default function Navbar() {
         <style>{`
           @media (max-width: 768px) {
             .nav-desktop { display: none !important; }
-            .nav-login { display: none !important; }
-            .nav-cta a:last-child, .nav-cta a { display: none !important; }
+            .nav-cta > * { display: none !important; }
             .nav-burger { display: flex !important; }
           }
         `}</style>
