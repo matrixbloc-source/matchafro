@@ -1,0 +1,7 @@
+-- Deprecated placeholder.
+-- Do not execute this file in Supabase.
+--
+-- The production schema for the active Vite/React app is:
+-- ../../supabase-schema.sql
+--
+-- This file remains only to avoid broken references from older notes.

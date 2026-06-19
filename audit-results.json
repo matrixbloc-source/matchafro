@@ -1,0 +1,166 @@
+{
+  "summary": {
+    "ok": 12,
+    "warn": 8,
+    "fail": 1,
+    "info": 5
+  },
+  "results": [
+    {
+      "section": "Accueil",
+      "status": "INFO",
+      "detail": "Page chargée",
+      "file": "C:\\Users\\kasda\\OneDrive\\Desktop\\matchafro\\audit-screenshots\\01-home-accueil.png"
+    },
+    {
+      "section": "Hero",
+      "status": "FAIL",
+      "detail": "h1 introuvable",
+      "file": null
+    },
+    {
+      "section": "Navbar",
+      "status": "WARN",
+      "detail": "0 liens nav trouvés",
+      "file": null
+    },
+    {
+      "section": "Smart Calendar",
+      "status": "WARN",
+      "detail": "Header Smart Calendar non trouvé",
+      "file": "C:\\Users\\kasda\\OneDrive\\Desktop\\matchafro\\audit-screenshots\\04-home-smart-calendar.png"
+    },
+    {
+      "section": "SC Compteur pros",
+      "status": "WARN",
+      "detail": "Compteur pros non visible",
+      "file": null
+    },
+    {
+      "section": "SC Sidebar rotation",
+      "status": "WARN",
+      "detail": "Carte recommandation non visible",
+      "file": null
+    },
+    {
+      "section": "SC Badge \"En rotation\"",
+      "status": "WARN",
+      "detail": "Badge \"En rotation\" absent",
+      "file": null
+    },
+    {
+      "section": "Featured (vedettes)",
+      "status": "WARN",
+      "detail": "0 liens profil trouvés sur la home",
+      "file": "C:\\Users\\kasda\\OneDrive\\Desktop\\matchafro\\audit-screenshots\\08-home-vedettes.png"
+    },
+    {
+      "section": "Bouton connexion client",
+      "status": "WARN",
+      "detail": "Bouton connexion client non visible dans la nav",
+      "file": null
+    },
+    {
+      "section": "Page /mon-compte",
+      "status": "INFO",
+      "detail": "Formulaire connexion client visible",
+      "file": "C:\\Users\\kasda\\OneDrive\\Desktop\\matchafro\\audit-screenshots\\10-client-mon-compte.png"
+    },
+    {
+      "section": "Page reset-password",
+      "status": "OK",
+      "detail": "Page accessible",
+      "file": null
+    },
+    {
+      "section": "Page devenir-professionnel",
+      "status": "OK",
+      "detail": "Formulaire inscription pro visible",
+      "file": "C:\\Users\\kasda\\OneDrive\\Desktop\\matchafro\\audit-screenshots\\12-become-pro.png"
+    },
+    {
+      "section": "Page /dashboard",
+      "status": "OK",
+      "detail": "Formulaire connexion pro visible",
+      "file": "C:\\Users\\kasda\\OneDrive\\Desktop\\matchafro\\audit-screenshots\\13-pro-dashboard.png"
+    },
+    {
+      "section": "Calendrier réservation (page pro)",
+      "status": "OK",
+      "detail": "Calendrier visible",
+      "file": "C:\\Users\\kasda\\OneDrive\\Desktop\\matchafro\\audit-screenshots\\14-reservation-profil.png"
+    },
+    {
+      "section": "Créneaux cliquables",
+      "status": "WARN",
+      "detail": "0 créneaux avec horaire trouvés",
+      "file": null
+    },
+    {
+      "section": "Section #reservation",
+      "status": "INFO",
+      "detail": "Screenshot section réservation",
+      "file": "C:\\Users\\kasda\\OneDrive\\Desktop\\matchafro\\audit-screenshots\\16-reservation-section.png"
+    },
+    {
+      "section": "Page /admin",
+      "status": "OK",
+      "detail": "Page admin accessible",
+      "file": "C:\\Users\\kasda\\OneDrive\\Desktop\\matchafro\\audit-screenshots\\17-admin-login.png"
+    },
+    {
+      "section": "Formulaire login admin",
+      "status": "OK",
+      "detail": "Champ mot de passe visible",
+      "file": null
+    },
+    {
+      "section": "Admin auth + panel",
+      "status": "OK",
+      "detail": "Dashboard admin chargé après login",
+      "file": "C:\\Users\\kasda\\OneDrive\\Desktop\\matchafro\\audit-screenshots\\19-admin-panel.png"
+    },
+    {
+      "section": "Admin stats",
+      "status": "OK",
+      "detail": "Stats globales visibles",
+      "file": null
+    },
+    {
+      "section": "Admin section Professionnels",
+      "status": "OK",
+      "detail": "Tableau pros visible",
+      "file": "C:\\Users\\kasda\\OneDrive\\Desktop\\matchafro\\audit-screenshots\\21-admin-pros.png"
+    },
+    {
+      "section": "Colonne date inscription",
+      "status": "OK",
+      "detail": "Colonne \"Inscription\" présente",
+      "file": null
+    },
+    {
+      "section": "Admin notifications",
+      "status": "OK",
+      "detail": "Section notifications chargée",
+      "file": "C:\\Users\\kasda\\OneDrive\\Desktop\\matchafro\\audit-screenshots\\23-admin-notifs.png"
+    },
+    {
+      "section": "Admin fondateurs",
+      "status": "OK",
+      "detail": "Barre de progression fondateurs visible",
+      "file": "C:\\Users\\kasda\\OneDrive\\Desktop\\matchafro\\audit-screenshots\\24-admin-fondateurs.png"
+    },
+    {
+      "section": "Route /inexistant",
+      "status": "INFO",
+      "detail": "Redirige vers home (fallback)",
+      "file": null
+    },
+    {
+      "section": "Route /pro/pro-qui-nexiste-pas",
+      "status": "INFO",
+      "detail": "Redirige vers home (fallback)",
+      "file": null
+    }
+  ]
+}

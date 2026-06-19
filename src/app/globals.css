@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #ffffff;
+  color: #0b0b0c;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #A87E3C;
+  color: #ffffff;
+}
+
+/* Thin, quiet scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #E8E3DA;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C9A35F;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Fine hairline used as a structural device throughout */
+.hairline {
+  background: linear-gradient(90deg, transparent, #E8E3DA 12%, #E8E3DA 88%, transparent);
+  height: 1px;
+}
