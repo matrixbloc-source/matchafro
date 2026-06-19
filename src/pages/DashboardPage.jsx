@@ -293,19 +293,65 @@ export default function DashboardPage() {
 }
 
 function BookingRow({ booking }) {
+  const [showContact, setShowContact] = useState(false);
+  const isActive = booking.status !== 'cancelled';
+
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid #F3F4F6', flexWrap: 'wrap', gap: 8 }}>
-      <div>
-        <p style={{ fontSize: 13, fontWeight: 700, color: '#111' }}>{booking.clientName}</p>
-        <p style={{ fontSize: 12, color: '#9CA3AF' }}>{booking.service} · {booking.startTime}</p>
+    <div style={{ padding: '12px 0', borderBottom: '1px solid #F3F4F6' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 700, color: '#111' }}>{booking.clientName}</p>
+          <p style={{ fontSize: 12, color: '#9CA3AF' }}>{booking.service} · {booking.startTime}</p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>
+            {new Date(booking.date + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+          </p>
+          {!isActive
+            ? <span style={{ fontSize: 11, color: '#EF4444', fontWeight: 700 }}>Annulé</span>
+            : <span style={{ fontSize: 11, color: '#059669', fontWeight: 700 }}>Confirmé</span>
+          }
+          {isActive && (
+            <button
+              onClick={() => setShowContact(v => !v)}
+              style={{ fontSize: 11, color: '#D97706', border: '1px solid #FDE68A', borderRadius: 6, padding: '3px 9px', background: showContact ? '#FEF3C7' : '#FFFBEB', cursor: 'pointer', fontWeight: 700, fontFamily: 'Inter, sans-serif', transition: 'background 0.15s' }}>
+              {showContact ? '▲ Masquer' : '📞 Coordonnées'}
+            </button>
+          )}
+        </div>
       </div>
-      <div style={{ textAlign: 'right' }}>
-        <p style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>
-          {new Date(booking.date + 'T12:00:00').toLocaleDateString('fr-FR', { day:'numeric', month:'short' })}
-        </p>
-        {booking.status === 'cancelled' && <span style={{ fontSize: 11, color: '#EF4444', fontWeight: 700 }}>Annulé</span>}
-        {booking.status !== 'cancelled' && <span style={{ fontSize: 11, color: '#059669', fontWeight: 700 }}>Confirmé</span>}
-      </div>
+
+      {showContact && isActive && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.2 }}
+          style={{ marginTop: 8, background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 8, padding: '10px 14px', overflow: 'hidden' }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: '#065F46', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1, fontFamily: 'Inter, sans-serif' }}>
+            Coordonnées du client
+          </p>
+          {booking.clientPhone ? (
+            <p style={{ fontSize: 13, color: '#065F46', fontFamily: 'Inter, sans-serif', marginBottom: 3 }}>
+              📞{' '}
+              <a href={`tel:${booking.clientPhone}`} style={{ color: '#059669', fontWeight: 600, textDecoration: 'none' }}>
+                {booking.clientPhone}
+              </a>
+            </p>
+          ) : null}
+          {booking.clientEmail ? (
+            <p style={{ fontSize: 13, color: '#065F46', fontFamily: 'Inter, sans-serif' }}>
+              ✉️{' '}
+              <a href={`mailto:${booking.clientEmail}`} style={{ color: '#059669', fontWeight: 600, textDecoration: 'none' }}>
+                {booking.clientEmail}
+              </a>
+            </p>
+          ) : null}
+          {!booking.clientPhone && !booking.clientEmail && (
+            <p style={{ fontSize: 12, color: '#9CA3AF', fontFamily: 'Inter, sans-serif' }}>Aucune coordonnée disponible.</p>
+          )}
+        </motion.div>
+      )}
     </div>
   );
 }

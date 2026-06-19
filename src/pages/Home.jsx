@@ -547,15 +547,13 @@ function HowItWorks() {
 }
 
 /* ─── 5. LAUNCH OFFER ────────────────────────────────────────────────── */
-const TOTAL = 50;
-const CLAIMED = 35;
-
 function LaunchOffer() {
+  const { founderCount, founderSlotsLeft, founderLimit } = useApp();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-120px' });
-  const remaining = TOTAL - CLAIMED;
-  const count = useCountUp(remaining, 1600, inView);
-  const pct = (CLAIMED / TOTAL) * 100;
+  const isFull = founderCount >= founderLimit;
+  const count = useCountUp(founderSlotsLeft, 1600, inView);
+  const pct = Math.min((founderCount / founderLimit) * 100, 100);
 
   return (
     <section id="offre" style={{ padding: '64px 40px' }}>
@@ -620,15 +618,31 @@ function LaunchOffer() {
                 backdropFilter: 'blur(4px)',
                 borderRadius: 24, padding: 'clamp(32px,4vw,48px) clamp(24px,4vw,40px)',
               }}>
-                <span style={{ fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.4)' }}>
-                  Places restantes
-                </span>
-                <div style={{ display: 'flex', alignItems: 'baseline', margin: '12px 0' }}>
-                  <span style={{ fontFamily: F, fontSize: 'clamp(80px,10vw,144px)', fontWeight: 500, lineHeight: 1, color: '#fff' }}>
-                    {count}
-                  </span>
-                  <span style={{ marginLeft: 8, fontFamily: F, fontSize: 30, fontWeight: 500, color: LIGHT }}>/{TOTAL}</span>
-                </div>
+                {isFull ? (
+                  <>
+                    <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: LIGHT, marginBottom: 16 }}>
+                      Programme Fondateur terminé
+                    </span>
+                    <span style={{ fontFamily: F, fontSize: 'clamp(48px,6vw,80px)', fontWeight: 500, lineHeight: 1, color: '#fff' }}>
+                      {founderLimit}
+                    </span>
+                    <span style={{ marginTop: 8, fontFamily: F, fontSize: 20, fontWeight: 400, color: LIGHT }}>
+                      fondateurs
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span style={{ fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.4)' }}>
+                      Places restantes
+                    </span>
+                    <div style={{ display: 'flex', alignItems: 'baseline', margin: '12px 0' }}>
+                      <span style={{ fontFamily: F, fontSize: 'clamp(80px,10vw,144px)', fontWeight: 500, lineHeight: 1, color: '#fff' }}>
+                        {count}
+                      </span>
+                      <span style={{ marginLeft: 8, fontFamily: F, fontSize: 30, fontWeight: 500, color: LIGHT }}>/{founderLimit}</span>
+                    </div>
+                  </>
+                )}
                 <div style={{ marginTop: 8, height: 6, width: 224, borderRadius: 999, background: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
                   <motion.div
                     initial={{ width: 0 }}
@@ -639,7 +653,7 @@ function LaunchOffer() {
                   />
                 </div>
                 <span style={{ marginTop: 12, fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-                  {CLAIMED} professionnels ont déjà rejoint
+                  {founderCount} professionnel{founderCount !== 1 ? 's' : ''} {founderCount !== 1 ? 'ont' : 'a'} déjà rejoint
                 </span>
               </div>
             </div>

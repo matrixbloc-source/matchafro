@@ -7,7 +7,10 @@ import {
 } from '../lib/smartTimeEngine.js';
 import { supabase, isSupabaseEnabled } from '../lib/supabase.js';
 import {
-  proToDB, bookingToDB, reviewToDB, notifToDB,
+  proFromDB, proToDB,
+  bookingFromDB, bookingToDB,
+  reviewFromDB, reviewToDB,
+  notifToDB,
   dbFetchPros, dbFetchBookings, dbFetchReviews, dbFetchNotifications, dbFetchProDelays,
   dbUpsertPro, dbDeletePro, dbIncrementViews,
   dbInsertBooking, dbCancelBooking, dbUpsertBookings, dbUpdateBooking,
@@ -30,8 +33,8 @@ export function slugify(str) {
 function uid() { return Math.random().toString(36).slice(2, 11); }
 function now() { return new Date().toISOString(); }
 
-/* ─── Données de démonstration ───────────────────────────────── */
-const DEMO_PROS = [
+/* ─── (données de démonstration supprimées — Supabase est la source) ── */
+const _UNUSED = [
   {
     id: 'demo-1', slug: 'amina-kone-paris',
     name: 'Amina Koné', salonName: 'Studio Amina K.',
@@ -149,13 +152,13 @@ const DEMO_PROS = [
   },
 ];
 
-const DEMO_BOOKINGS = [
+const _DEMO_BOOKINGS = [
   { id: 'b1', proId: 'demo-1', clientName: 'Mariama Traoré', clientPhone: '+33 6 11 22 33 44', clientEmail: 'mariama@email.fr', service: 'Box Braids', serviceId: 's1', date: '2025-07-15', startTime: '09:00', endTime: '13:00', status: 'completed', createdAt: '2025-07-01T10:00:00Z' },
   { id: 'b2', proId: 'demo-1', clientName: 'Sophie K.', clientPhone: '+33 7 55 66 77 88', clientEmail: 'sophie@email.fr', service: 'Knotless Braids', serviceId: 's2', date: '2025-07-18', startTime: '10:00', endTime: '15:00', status: 'confirmed', createdAt: '2025-07-02T14:00:00Z' },
   { id: 'b3', proId: 'demo-2', clientName: 'Aminata D.', clientPhone: '+33 6 99 88 77 66', clientEmail: 'aminata@email.fr', service: 'Locks installation', serviceId: 's5', date: '2025-07-20', startTime: '10:00', endTime: '16:00', status: 'scheduled', createdAt: '2025-07-05T09:00:00Z' },
 ];
 
-const DEMO_REVIEWS = [
+const _DEMO_REVIEWS = [
   { id: 'r1', proId: 'demo-1', author: 'Mariama T.', rating: 5, comment: "Des tresses magnifiques ! Amina est très professionnelle et à l'écoute.", service: 'Box Braids', createdAt: '2025-06-10T10:00:00Z', verified: true },
   { id: 'r2', proId: 'demo-1', author: 'Sophie K.', rating: 5, comment: "Knotless parfaitement réalisés. Très doux, aucune traction.", service: 'Knotless Braids', createdAt: '2025-06-22T14:00:00Z', verified: true },
   { id: 'r3', proId: 'demo-1', author: 'Chidinma O.', rating: 4, comment: "Excellent travail, très soigné. Petite attente au début.", service: 'Cornrows', createdAt: '2025-07-02T09:00:00Z', verified: true },
@@ -171,10 +174,10 @@ export function AppProvider({ children }) {
     catch { return fallback; }
   };
 
-  /* State — initialise depuis localStorage (synchrone, pas de blanc) */
-  const [pros,          setPros]         = useState(() => load('ma_pros', DEMO_PROS));
-  const [bookings,      setBookings]     = useState(() => load('ma_bookings', DEMO_BOOKINGS));
-  const [reviews,       setReviews]      = useState(() => load('ma_reviews', DEMO_REVIEWS));
+  /* State — Supabase est la seule source de vérité */
+  const [pros,          setPros]         = useState([]);
+  const [bookings,      setBookings]     = useState([]);
+  const [reviews,       setReviews]      = useState([]);
   const [currentProId,  setCurrentProId] = useState(() => load('ma_current_pro', null));
   const [adminAuth,         setAdminAuth]         = useState(false);
   const [notifications,     setNotifications]     = useState(() => load('ma_notifications', []));
@@ -197,52 +200,12 @@ export function AppProvider({ children }) {
   useEffect(() => { localStorage.setItem('ma_client',        JSON.stringify(currentClient));       }, [currentClient]);
   useEffect(() => { localStorage.setItem('ma_admin_notifs',  JSON.stringify(adminNotifications)); }, [adminNotifications]);
 
-  /* ── Supabase hydration ─────────────────────────────────────── */
+  /* ── Supabase hydration — fetch direct, sans migration demo ─── */
   useEffect(() => {
     if (!isSupabaseEnabled || !supabase) { setDbReady(false); return; }
 
     async function hydrate() {
       try {
-        // Check if Supabase is empty
-        const { data: existingPros, error: checkErr } = await supabase
-          .from('professionals').select('id').limit(1);
-
-        if (checkErr) {
-          console.error('[db] hydration check:', checkErr.message);
-          setDbReady(false);
-          return;
-        }
-
-        if (!existingPros || existingPros.length === 0) {
-          // First run — migrate current state (localStorage or demo) to Supabase
-          console.log('[db] Migration initiale localStorage → Supabase…');
-
-          const currentPros      = load('ma_pros',          DEMO_PROS);
-          const currentBookings  = load('ma_bookings',      DEMO_BOOKINGS);
-          const currentReviews   = load('ma_reviews',       DEMO_REVIEWS);
-          const currentNotifs    = load('ma_notifications', []);
-          const currentDelays    = load('ma_pro_delays',    {});
-
-          await supabase.from('professionals').upsert(currentPros.map(proToDB),      { ignoreDuplicates: true });
-          await supabase.from('bookings').upsert(currentBookings.map(bookingToDB),   { ignoreDuplicates: true });
-          await supabase.from('reviews').upsert(currentReviews.map(reviewToDB),      { ignoreDuplicates: true });
-          if (currentNotifs.length) {
-            await supabase.from('notifications').upsert(currentNotifs.map(notifToDB), { ignoreDuplicates: true });
-          }
-          if (Object.keys(currentDelays).length) {
-            await supabase.from('pro_delays').upsert(
-              Object.entries(currentDelays).map(([pro_id, delay_minutes]) => ({
-                pro_id, delay_minutes, updated_at: new Date().toISOString(),
-              })),
-              { ignoreDuplicates: true }
-            );
-          }
-          console.log('[db] Migration terminée ✓');
-          setDbReady(true);
-          return;
-        }
-
-        // Supabase has data — hydrate React state from it
         const [prosData, booksData, revData, notifData, delayData] = await Promise.all([
           dbFetchPros(),
           dbFetchBookings(),
@@ -251,31 +214,13 @@ export function AppProvider({ children }) {
           dbFetchProDelays(),
         ]);
 
-        // Merge : conserver les pros locaux absents de Supabase (ex : inscription récente)
-        if (prosData) {
-          const supabaseIds  = new Set(prosData.map(p => p.id));
-          const localPros    = load('ma_pros', []);
-          const localOnlyPros = localPros.filter(p => !supabaseIds.has(p.id));
-          if (localOnlyPros.length > 0) {
-            console.log(`[db] ${localOnlyPros.length} pro(s) local(aux) absent(s) de Supabase → sync en cours...`);
-            try {
-              await supabase.from('professionals').upsert(localOnlyPros.map(proToDB), { ignoreDuplicates: false });
-              console.log('[db] Sync pros locaux → Supabase ✓');
-            } catch (syncErr) {
-              console.warn('[db] Sync pros locaux échouée (données locales conservées) :', syncErr);
-            }
-          }
-          setPros([...prosData, ...localOnlyPros]);
-        } else {
-          console.warn('[db] dbFetchPros() n\'a rien retourné — state local conservé');
-        }
+        if (prosData)  setPros(prosData);
+        if (booksData) setBookings(booksData);
+        if (revData)   setReviews(revData);
+        if (notifData) setNotifications(notifData);
+        if (delayData) setProDelays(delayData);
 
-        if (booksData)  setBookings(booksData);
-        if (revData)    setReviews(revData);
-        if (notifData)  setNotifications(notifData);
-        if (delayData)  setProDelays(delayData);
-
-        console.log('[db] Hydratation Supabase terminée ✓', { pros: prosData?.length, bookings: booksData?.length });
+        console.log('[db] Hydratation ✓', { pros: prosData?.length, bookings: booksData?.length });
         setDbReady(true);
       } catch (err) {
         console.error('[db] hydration error:', err);
@@ -284,6 +229,43 @@ export function AppProvider({ children }) {
     }
 
     hydrate();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* ── Supabase Realtime — synchronisation temps réel ────────── */
+  useEffect(() => {
+    if (!isSupabaseEnabled || !supabase) return;
+
+    const channel = supabase
+      .channel('realtime-matchafro')
+      /* Professionals */
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'professionals' },
+        ({ new: r }) => setPros(prev => prev.some(p => p.id === r.id) ? prev : [...prev, proFromDB(r)])
+      )
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'professionals' },
+        ({ new: r }) => setPros(prev => prev.map(p => p.id === r.id ? proFromDB(r) : p))
+      )
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'professionals' },
+        ({ old: r }) => setPros(prev => prev.filter(p => p.id !== r.id))
+      )
+      /* Bookings */
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bookings' },
+        ({ new: r }) => setBookings(prev => prev.some(b => b.id === r.id) ? prev : [...prev, bookingFromDB(r)])
+      )
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'bookings' },
+        ({ new: r }) => setBookings(prev => prev.map(b => b.id === r.id ? bookingFromDB(r) : b))
+      )
+      /* Reviews */
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reviews' },
+        ({ new: r }) => setReviews(prev => prev.some(rv => rv.id === r.id) ? prev : [...prev, reviewFromDB(r)])
+      )
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'reviews' },
+        ({ new: r }) => setReviews(prev => prev.map(rv => rv.id === r.id ? reviewFromDB(r) : rv))
+      )
+      .subscribe(status => {
+        if (status === 'SUBSCRIBED') console.log('[realtime] connecté ✓');
+      });
+
+    return () => supabase.removeChannel(channel);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ── Supabase Auth — écoute la session ─────────────────────── */
@@ -403,13 +385,39 @@ export function AppProvider({ children }) {
     const b = { id: 'b_' + uid(), ...booking, status: 'confirmed', createdAt: now() };
     setBookings(prev => [...prev, b]);
     sync(() => dbInsertBooking(b));
-    const proName = pros.find(p => p.id === booking.proId)?.name || '';
+
+    const targetPro = pros.find(p => p.id === booking.proId);
+    const proName   = targetPro?.name || '';
+
+    /* Notification admin */
     setAdminNotifications(prev => [{
       id: 'an_' + uid(), type: 'new_booking', bookingId: b.id,
       proId: booking.proId, proName,
       clientName: booking.clientName, service: booking.service, date: booking.date,
       createdAt: now(), read: false,
     }, ...prev]);
+
+    /* Notification in-app pour le professionnel */
+    const proNotif = {
+      id:          'n_' + uid(),
+      type:        'new_booking',
+      proId:       booking.proId,
+      bookingId:   b.id,
+      date:        booking.date,
+      clientName:  booking.clientName,
+      message:     `Nouvelle réservation : ${booking.service} le ${booking.date} à ${booking.startTime}`,
+      read:        false,
+    };
+    setNotifications(prev => [proNotif, ...prev]);
+    sync(() => dbInsertNotifications([proNotif]));
+
+    /* Email + SMS via Edge Function Supabase (fire-and-forget) */
+    if (isSupabaseEnabled && supabase && targetPro) {
+      supabase.functions
+        .invoke('send-notification', { body: { type: 'new_booking', booking: b, pro: targetPro } })
+        .catch(e => console.warn('[notify] Edge Function:', e.message));
+    }
+
     return b;
   }
 
