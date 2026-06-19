@@ -54,6 +54,8 @@ export default function CategoryPage() {
         .cat-pro-card:hover .cat-pro-img { transform: scale(1.05) !important; }
         @media (max-width: 900px) { .cat-grid { grid-template-columns: 1fr 1fr !important; } }
         @media (max-width: 580px) { .cat-grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 768px) { .cat-pro-photo { max-height: 220px !important; aspect-ratio: unset !important; } }
+        @media (max-width: 480px) { .cat-pro-photo { max-height: 180px !important; } }
       `}</style>
 
       {/* En-tête */}
@@ -131,7 +133,7 @@ export default function CategoryPage() {
                         transition: 'all 0.5s', cursor: 'pointer',
                       }}
                     >
-                      <div style={{ position: 'relative', aspectRatio: '5/6', overflow: 'hidden' }}>
+                      <div className="cat-pro-photo" style={{ position: 'relative', aspectRatio: '5/6', overflow: 'hidden' }}>
                         {photo ? (
                           <img
                             src={photo}

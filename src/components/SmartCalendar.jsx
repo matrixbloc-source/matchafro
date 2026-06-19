@@ -933,12 +933,35 @@ function SmartCalendarHome({ compact = false }) {
           .sc-sidebar { display: none !important; }
           .sc-outer { flex-direction: column !important; }
         }
+        /* ══ MOBILE COMPACT — portrait, style Doctolib/Planity ══ */
         @media (max-width: 768px) {
           .sc-desktop-grid { display: none !important; }
           .sc-mobile-view  { display: flex !important; }
-          .sc-week-nav     { gap: 6px !important; }
-          .sc-header-inner { padding: 14px 18px 12px !important; }
-          .sc-search-section { padding: 10px 16px 0 !important; }
+          .sc-header-inner { padding: 10px 14px 10px !important; }
+          .sc-subtitle { display: none !important; }
+          .sc-search-section { padding: 8px 14px 0 !important; }
+          .sc-filters-row {
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            gap: 6px !important;
+            padding-bottom: 8px !important;
+          }
+          .sc-filters-row::-webkit-scrollbar { display: none; }
+          .sc-filter-chip { white-space: nowrap !important; padding: 4px 10px !important; font-size: 10px !important; }
+          .sc-filters-count { display: none !important; }
+          .sc-week-nav { gap: 8px !important; padding: 7px 14px !important; }
+          .sc-week-btn { padding: 5px 10px !important; font-size: 11px !important; }
+          .sc-day-pills { padding: 8px 14px !important; gap: 5px !important; }
+          .sc-day-pill { padding: 6px 8px !important; }
+          .sc-day-pill-name { font-size: 8px !important; }
+          .sc-day-pill-num { font-size: 15px !important; }
+          .sc-slot-list { padding: 8px 14px !important; max-height: 280px !important; }
+          .sc-slot-item { padding: 7px 10px !important; border-radius: 10px !important; }
+          .sc-slot-time { font-size: 15px !important; min-width: 40px !important; }
+          .sc-nearest-banner { padding: 10px 14px !important; gap: 10px !important; }
+          .sc-nearest-btn { padding: 7px 14px !important; font-size: 12px !important; white-space: nowrap !important; }
         }
         @media (min-width: 769px) {
           .sc-mobile-view { display: none !important; }
@@ -948,9 +971,9 @@ function SmartCalendarHome({ compact = false }) {
           .sc-tz-sep   { display: none !important; }
           .sc-search-row { flex-direction: column !important; }
           .sc-flash-btn  { width: 100% !important; justify-content: center !important; }
-          .sc-week-nav   { flex-wrap: wrap !important; justify-content: center !important; padding: 10px 16px !important; }
-          .sc-week-center { order: -1 !important; width: 100% !important; text-align: center !important; margin-bottom: 4px !important; }
-          .sc-week-btn   { flex: 1 !important; justify-content: center !important; }
+          .sc-week-nav   { flex-wrap: wrap !important; justify-content: center !important; padding: 6px 14px !important; }
+          .sc-week-center { order: -1 !important; width: 100% !important; text-align: center !important; margin-bottom: 2px !important; }
+          .sc-week-btn   { flex: 1 !important; justify-content: center !important; font-size: 10px !important; }
         }
         @media (max-width: 380px) {
           .sc-clock-block { scale: 0.9; }
@@ -987,7 +1010,7 @@ function SmartCalendarHome({ compact = false }) {
                 <h1 style={{ fontFamily: F, fontSize: 22, fontWeight: 600, color: INK, margin: 0, letterSpacing: '-0.04em', lineHeight: 1 }}>
                   Smart Calendar
                 </h1>
-                <p style={{ fontSize: 11, color: 'rgba(248,242,234,0.38)', margin: '4px 0 0', fontFamily: 'Inter, sans-serif' }}>
+                <p className="sc-subtitle" style={{ fontSize: 11, color: 'rgba(248,242,234,0.38)', margin: '4px 0 0', fontFamily: 'Inter, sans-serif' }}>
                   Trouvez le bon professionnel, au bon moment.
                 </p>
               </div>
@@ -1117,7 +1140,7 @@ function SmartCalendarHome({ compact = false }) {
             </div>
 
             {/* Filtres */}
-            <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', paddingBottom: 13, alignItems: 'center' }}>
+            <div className="sc-filters-row" style={{ display: 'flex', gap: 7, flexWrap: 'wrap', paddingBottom: 13, alignItems: 'center' }}>
               {QUICK_FILTERS.map(f => {
                 const on = filters.has(f.key);
                 return (
@@ -1142,7 +1165,7 @@ function SmartCalendarHome({ compact = false }) {
                   </button>
                 );
               })}
-              <span style={{ marginLeft: 'auto', fontSize: 11, color: 'rgba(248,242,234,0.28)', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'Inter, sans-serif' }}>
+              <span className="sc-filters-count" style={{ marginLeft: 'auto', fontSize: 11, color: 'rgba(248,242,234,0.28)', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'Inter, sans-serif' }}>
                 <span style={{ fontFamily: F, fontSize: 14, fontWeight: 500, color: 'rgba(212,165,116,0.7)' }}>{matchedPros.length}</span>
                 professionnel{matchedPros.length > 1 ? 's' : ''}
               </span>
@@ -1290,24 +1313,24 @@ function SmartCalendarHome({ compact = false }) {
           {/* ── MOBILE : sélecteur jour + liste créneaux ──────── */}
           <div className="sc-mobile-view" style={{ flexDirection: 'column', display: 'none' }}>
             {/* Pills jours */}
-            <div style={{ display: 'flex', gap: 6, padding: '12px 18px', overflowX: 'auto', borderBottom: `1px solid ${LINE}`, background: MIST }}>
+            <div className="sc-day-pills" style={{ display: 'flex', gap: 6, padding: '12px 18px', overflowX: 'auto', borderBottom: `1px solid ${LINE}`, background: MIST }}>
               {weekDays.map(day => {
                 const dk = toDateKey(day);
                 const active = dk === selectedDay;
                 const isToday = dk === todayKey;
                 const isPast = dk < todayKey;
                 return (
-                  <button key={dk} onClick={() => !isPast && setSelectedDay(dk)} style={{
+                  <button key={dk} className="sc-day-pill" onClick={() => !isPast && setSelectedDay(dk)} style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0,
                     padding: '8px 12px', borderRadius: 12, cursor: isPast ? 'default' : 'pointer',
                     border: `1.5px solid ${active ? BRNZ : 'rgba(255,255,255,0.1)'}`,
                     background: active ? CRM : 'transparent',
                     opacity: isPast ? 0.28 : 1, transition: 'all 0.2s',
                   }}>
-                    <span style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: active ? BRNZ : 'rgba(248,242,234,0.38)', fontFamily: 'Inter, sans-serif' }}>
+                    <span className="sc-day-pill-name" style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: active ? BRNZ : 'rgba(248,242,234,0.38)', fontFamily: 'Inter, sans-serif' }}>
                       {day.toLocaleDateString('fr-FR', { weekday: 'short' })}
                     </span>
-                    <span style={{ fontFamily: F, fontSize: 18, fontWeight: 500, color: active ? BRNZ : INK }}>
+                    <span className="sc-day-pill-num" style={{ fontFamily: F, fontSize: 18, fontWeight: 500, color: active ? BRNZ : INK }}>
                       {day.getDate()}
                     </span>
                     {isToday && <span style={{ width: 4, height: 4, borderRadius: '50%', background: BRNZ, marginTop: 2 }} />}
@@ -1317,7 +1340,7 @@ function SmartCalendarHome({ compact = false }) {
             </div>
 
             {/* Liste créneaux */}
-            <div style={{ padding: '14px 18px', maxHeight: 360, overflowY: 'auto', background: BG }}>
+            <div className="sc-slot-list" style={{ padding: '14px 18px', maxHeight: 360, overflowY: 'auto', background: BG }}>
               {selectedDay && (() => {
                 const map = slotMaps[selectedDay] || {};
                 const filledSlots = TIME_SLOTS.filter(t => (map[t] || []).length > 0);
@@ -1331,6 +1354,7 @@ function SmartCalendarHome({ compact = false }) {
                       return (
                         <button
                           key={time}
+                          className="sc-slot-item"
                           onClick={() => openBooking(pros[0], selectedDay, time, pros)}
                           style={{
                             display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px',
@@ -1341,7 +1365,7 @@ function SmartCalendarHome({ compact = false }) {
                           onMouseEnter={e => { e.currentTarget.style.background = CRM; e.currentTarget.style.borderColor = 'rgba(212,165,116,0.4)'; }}
                           onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
                         >
-                          <span style={{ fontFamily: F, fontSize: 18, fontWeight: 500, color: BRNZ, minWidth: 50 }}>{time}</span>
+                          <span className="sc-slot-time" style={{ fontFamily: F, fontSize: 18, fontWeight: 500, color: BRNZ, minWidth: 50 }}>{time}</span>
                           <div style={{ display: 'flex', gap: 3, flexShrink: 0 }}>
                             {pros.slice(0, 3).map(p => <ProPill key={p.id} pro={p} size={28} />)}
                           </div>
@@ -1371,6 +1395,7 @@ function SmartCalendarHome({ compact = false }) {
                 key="nearest"
                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
                 transition={{ duration: 0.4, ease: EASE }}
+                className="sc-nearest-banner"
                 style={{
                   borderTop: `1px solid rgba(212,165,116,0.18)`,
                   padding: '16px 24px',
@@ -1406,6 +1431,7 @@ function SmartCalendarHome({ compact = false }) {
 
                 {/* CTA */}
                 <button
+                  className="sc-nearest-btn"
                   onClick={bookNearest}
                   style={{
                     padding: '9px 22px', borderRadius: 12,

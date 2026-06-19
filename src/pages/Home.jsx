@@ -374,6 +374,8 @@ function Featured() {
         @media (max-width: 900px) { .grid4 { grid-template-columns: 1fr 1fr !important; } }
         @media (max-width: 580px) { .grid4 { grid-template-columns: 1fr !important; } }
         @media (max-width: 480px) { .featured-header { flex-direction: column !important; align-items: flex-start !important; } }
+        @media (max-width: 768px) { .pro-card-photo { max-height: 220px !important; aspect-ratio: unset !important; } }
+        @media (max-width: 480px) { .pro-card-photo { max-height: 180px !important; } }
       `}</style>
       <div style={SHELL}>
         <div className="featured-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 24, marginBottom: 56, flexWrap: 'wrap' }}>
@@ -430,7 +432,7 @@ function Featured() {
                       transition: 'all 0.5s', cursor: 'pointer',
                     }}
                   >
-                    <div style={{ position: 'relative', aspectRatio: '5/6', overflow: 'hidden' }}>
+                    <div className="pro-card-photo" style={{ position: 'relative', aspectRatio: '5/6', overflow: 'hidden' }}>
                       {photo ? (
                         <img
                           src={photo}
@@ -680,7 +682,13 @@ function LaunchOffer() {
 /* ─── 6. SMART CALENDAR ─────────────────────────────────────────────────── */
 function SmartCalendarSection() {
   return (
-    <section id="calendrier" style={{ padding: 'clamp(72px,9vw,112px) clamp(20px,5vw,40px)', background: '#0B0B0B' }}>
+    <section id="calendrier" className="sc-section" style={{ padding: 'clamp(72px,9vw,112px) clamp(20px,5vw,40px)', background: '#0B0B0B' }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .sc-section { padding-top: 32px !important; padding-bottom: 24px !important; }
+          .sc-heading  { margin-bottom: 20px !important; }
+        }
+      `}</style>
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
         {/* Label */}
         <motion.div
@@ -701,6 +709,7 @@ function SmartCalendarSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
+          className="sc-heading"
           style={{
             fontFamily: F, fontWeight: 500, letterSpacing: '-0.04em',
             fontSize: 'clamp(28px,3.8vw,52px)', color: '#F8F2EA', margin: '0 0 40px',
