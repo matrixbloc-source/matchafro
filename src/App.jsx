@@ -1,6 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Component } from 'react';
-import { AppProvider } from './context/AppContext.jsx';
+import { AppProvider, useApp } from './context/AppContext.jsx';
 
 class ErrorBoundary extends Component {
   constructor(props) { super(props); this.state = { error: null }; }
@@ -161,6 +161,13 @@ const GLOBAL_CSS = `
   }
 `;
 
+/* Route protégée pro — redirige vers /devenir-professionnel si non connecté */
+function ProtectedProRoute({ children }) {
+  const { currentPro } = useApp();
+  if (!currentPro) return <Navigate to="/devenir-professionnel" replace />;
+  return children;
+}
+
 /* Pages qui n'ont pas de Navbar/Footer (layouts complets) */
 const FULL_LAYOUT_PATHS = ['/dashboard', '/admin'];
 
@@ -198,7 +205,7 @@ export default function App() {
         <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
 
         {/* Pages avec leur propre layout (no Navbar/Footer) */}
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard" element={<ProtectedProRoute><DashboardPage /></ProtectedProRoute>} />
         <Route path="/admin" element={<AdminPage />} />
 
         {/* Fallback */}

@@ -119,9 +119,9 @@ export default function ClientDashboardPage() {
     );
   }
 
-  /* Réservations de ce client (filtrées par email ou clientId) */
+  /* Réservations de ce client */
   const myBookings = bookings
-    .filter(b => b.clientEmail === currentClient.email || b.clientId === currentClient.email)
+    .filter(b => b.clientEmail === currentClient.email)
     .sort((a, b) => b.date.localeCompare(a.date));
 
   const upcoming = myBookings.filter(b => !['completed','cancelled'].includes(b.status));

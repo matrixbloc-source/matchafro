@@ -144,7 +144,8 @@ export default function DashboardPage() {
 
   const pro = currentPro;
   const myBookings = (bookings || []).filter(b => b.proId === pro.id);
-  const upcomingBookings = myBookings.filter(b => b.date >= new Date().toISOString().slice(0,10) && b.status !== 'cancelled');
+  const todayParis = new Date().toLocaleDateString('fr-CA', { timeZone: 'Europe/Paris' });
+  const upcomingBookings = myBookings.filter(b => b.date >= todayParis && b.status !== 'cancelled');
   const reviews = getProReviews(pro.id);
   const rating  = avgRating(pro.id);
 
