@@ -931,58 +931,55 @@ function SmartCalendarHome({ compact = false }) {
         .sc-day-col { min-width: 90px; }
         @media (max-width: 900px) {
           .sc-sidebar { display: none !important; }
-          .sc-outer { flex-direction: column !important; }
+          /* align-items:stretch = le calendrier occupe 100% de la largeur, pas son contenu */
+          .sc-outer { flex-direction: column !important; align-items: stretch !important; width: 100% !important; max-width: 100% !important; }
         }
-        /* ══ MOBILE COMPACT — portrait, style Doctolib/Planity ══ */
         @media (max-width: 768px) {
           .sc-desktop-grid { display: none !important; }
+          /* min-width:0 neutralise le minWidth:720 inline si display:none échoue */
+          .sc-grid-inner   { min-width: 0 !important; width: 100% !important; }
           .sc-mobile-view  { display: flex !important; }
-          .sc-header-inner { padding: 10px 14px 10px !important; }
-          .sc-subtitle { display: none !important; }
+          .sc-header-inner { padding: 10px 14px !important; }
+          .sc-subtitle     { display: none !important; }
           .sc-search-section { padding: 8px 14px 0 !important; }
-          .sc-filters-row {
-            flex-wrap: nowrap !important;
-            overflow-x: auto !important;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            gap: 6px !important;
-            padding-bottom: 8px !important;
-          }
-          .sc-filters-row::-webkit-scrollbar { display: none; }
-          .sc-filter-chip { white-space: nowrap !important; padding: 4px 10px !important; font-size: 10px !important; }
+          /* Filtres : 2 lignes wrap, pas de scroll horizontal */
+          .sc-filters-row  { flex-wrap: wrap !important; gap: 6px !important; padding-bottom: 8px !important; }
+          .sc-filter-chip  { font-size: 10px !important; padding: 3px 9px !important; }
           .sc-filters-count { display: none !important; }
-          .sc-week-nav { gap: 8px !important; padding: 7px 14px !important; }
-          .sc-week-btn { padding: 5px 10px !important; font-size: 11px !important; }
-          .sc-day-pills { padding: 8px 14px !important; gap: 5px !important; }
-          .sc-day-pill { padding: 6px 8px !important; }
+          /* Nav semaine : boutons empilés verticalement */
+          .sc-week-nav    { flex-direction: column !important; align-items: stretch !important; gap: 6px !important; padding: 8px 14px !important; }
+          .sc-week-center { order: -1 !important; text-align: center !important; font-size: 14px !important; }
+          .sc-week-btn    { justify-content: center !important; font-size: 11px !important; padding: 6px 14px !important; }
+          /* Jours : flex:1 = 7 pills partagent la largeur, aucun débordement */
+          .sc-day-pills   { padding: 8px 14px !important; gap: 5px !important; overflow-x: visible !important; }
+          .sc-day-pill    { flex: 1 !important; min-width: 0 !important; padding: 6px 4px !important; }
           .sc-day-pill-name { font-size: 8px !important; }
-          .sc-day-pill-num { font-size: 15px !important; }
-          .sc-slot-list { padding: 8px 14px !important; max-height: 280px !important; }
-          .sc-slot-item { padding: 7px 10px !important; border-radius: 10px !important; }
-          .sc-slot-time { font-size: 15px !important; min-width: 40px !important; }
-          .sc-nearest-banner { padding: 10px 14px !important; gap: 10px !important; }
-          .sc-nearest-btn { padding: 7px 14px !important; font-size: 12px !important; white-space: nowrap !important; }
+          .sc-day-pill-num  { font-size: 14px !important; }
+          /* Créneaux */
+          .sc-slot-list   { padding: 8px 14px !important; max-height: 280px !important; }
+          .sc-slot-item   { padding: 7px 10px !important; border-radius: 10px !important; }
+          .sc-slot-time   { font-size: 15px !important; min-width: 38px !important; }
+          /* Bannière premier créneau */
+          .sc-nearest-banner { padding: 10px 14px !important; gap: 10px !important; flex-wrap: wrap !important; }
+          .sc-nearest-btn    { padding: 7px 14px !important; font-size: 12px !important; }
         }
         @media (min-width: 769px) {
           .sc-mobile-view { display: none !important; }
         }
         @media (max-width: 520px) {
-          .sc-tz-badge { display: none !important; }
-          .sc-tz-sep   { display: none !important; }
+          .sc-tz-badge   { display: none !important; }
+          .sc-tz-sep     { display: none !important; }
           .sc-search-row { flex-direction: column !important; }
           .sc-flash-btn  { width: 100% !important; justify-content: center !important; }
-          .sc-week-nav   { flex-wrap: wrap !important; justify-content: center !important; padding: 6px 14px !important; }
-          .sc-week-center { order: -1 !important; width: 100% !important; text-align: center !important; margin-bottom: 2px !important; }
-          .sc-week-btn   { flex: 1 !important; justify-content: center !important; font-size: 10px !important; }
         }
         @media (max-width: 380px) {
-          .sc-clock-block { scale: 0.9; }
+          .sc-clock-block  { scale: 0.9; }
           .sc-pros-counter { display: none !important; }
         }
       `}</style>
 
       {/* ── Outer layout: calendrier + sidebar ─────────────────── */}
-      <div className="sc-outer" style={{ display: 'flex', gap: 18, alignItems: 'flex-start' }}>
+      <div className="sc-outer" style={{ display: 'flex', gap: 18, alignItems: 'flex-start', width: '100%', maxWidth: '100%' }}>
 
         {/* ── Calendrier principal ─────────────────────────────── */}
         <div style={{
@@ -1199,7 +1196,7 @@ function SmartCalendarHome({ compact = false }) {
 
           {/* ── GRILLE DESKTOP ─────────────────────────────────── */}
           <div className="sc-desktop-grid" style={{ overflowX: 'auto', background: BG }}>
-            <div style={{ minWidth: 720 }}>
+            <div className="sc-grid-inner" style={{ minWidth: 720 }}>
 
               {/* En-têtes jours */}
               <div style={{ display: 'grid', gridTemplateColumns: '56px repeat(7, 1fr)', borderBottom: `1px solid ${LINE}`, background: MIST }}>

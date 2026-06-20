@@ -682,10 +682,10 @@ function LaunchOffer() {
 /* ─── 6. SMART CALENDAR ─────────────────────────────────────────────────── */
 function SmartCalendarSection() {
   return (
-    <section id="calendrier" className="sc-section" style={{ padding: 'clamp(72px,9vw,112px) clamp(20px,5vw,40px)', background: '#0B0B0B' }}>
+    <section id="calendrier" className="sc-section" style={{ padding: 'clamp(72px,9vw,112px) clamp(20px,5vw,40px)', background: '#0B0B0B', overflowX: 'hidden' }}>
       <style>{`
         @media (max-width: 768px) {
-          .sc-section { padding-top: 32px !important; padding-bottom: 24px !important; }
+          .sc-section { padding-top: 40px !important; padding-bottom: 32px !important; }
           .sc-heading  { margin-bottom: 20px !important; }
         }
       `}</style>
