@@ -14,7 +14,7 @@ import {
   dbFetchPros, dbFetchBookings, dbFetchReviews, dbFetchNotifications, dbFetchProDelays,
   dbUpsertPro, dbDeletePro, dbIncrementViews,
   dbInsertBooking, dbCancelBooking, dbUpsertBookings, dbUpdateBooking,
-  dbInsertReview,
+  dbInsertReview, dbDeleteReview,
   dbInsertNotifications, dbMarkNotifRead, dbMarkAllNotifsRead, dbDeleteOldDelayNotifs,
   dbUpsertProDelay, dbLogSmartTimeEvent,
 } from '../lib/db.js';
@@ -22,6 +22,25 @@ import { uploadPhoto } from '../lib/storage.js';
 
 const AppContext = createContext(null);
 const FOUNDER_LIMIT = 50;
+
+const DEFAULT_SITE_CONTENT = {
+  heroEyebrow: 'La beauté afro, sur rendez-vous',
+  heroSubtitle: 'Tresses, locks, perruques, barber, maquillage et onglerie près de chez vous. Des artisans vérifiés, une réservation en quelques secondes.',
+  statArtisans: '5 000+', statPays: '12', statNote: '4,9/5',
+  categoriesTitle: 'Un savoir-faire pour chaque style.',
+  categoriesSubtitle: "Six familles de prestations, des centaines d'artisans spécialisés. Trouvez la main experte qu'il vous faut.",
+  catImgTresses:    'https://images.unsplash.com/photo-1626954079979-ec4f7b05e032?q=80&w=1200&auto=format&fit=crop',
+  catImgLocks:      'https://images.unsplash.com/photo-1605980776566-0486c3ac7617?q=80&w=1200&auto=format&fit=crop',
+  catImgPerruques:  'https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=1200&auto=format&fit=crop',
+  catImgBarber:     'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=1200&auto=format&fit=crop',
+  catImgMaquillage: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?q=80&w=1200&auto=format&fit=crop',
+  catImgOnglerie:   'https://images.unsplash.com/photo-1604654894610-df63bc536371?q=80&w=1200&auto=format&fit=crop',
+  featuredTitle: 'Les artisans les plus demandés.',
+  howItWorksTitle: 'Trois étapes, zéro friction.',
+  step1Title: 'Rechercher', step1Body: 'Filtrez par prestation, ville et budget. Comparez les portfolios, les notes et les disponibilités réelles.',
+  step2Title: 'Réserver',   step2Body: "Choisissez votre créneau et confirmez en quelques secondes. Confirmation immédiate, paiement directement à l'artisan.",
+  step3Title: 'Profiter',   step3Body: 'Présentez-vous, détendez-vous, repartez sublimée. Laissez un avis pour la prochaine cliente.',
+};
 
 /* ─── Helpers ────────────────────────────────────────────────── */
 export function slugify(str) {
@@ -183,8 +202,10 @@ export function AppProvider({ children }) {
   const [notifications,     setNotifications]     = useState(() => load('ma_notifications', []));
   const [adminNotifications, setAdminNotifications] = useState(() => load('ma_admin_notifs', []));
   const [proDelays,     setProDelays]     = useState(() => load('ma_pro_delays', {}));
-  const [dbReady,       setDbReady]       = useState(false);
-  const [pendingEmail,  setPendingEmail]  = useState(null);
+  const [dbReady,          setDbReady]          = useState(false);
+  const [pendingEmail,     setPendingEmail]     = useState(null);
+  const [siteContent,      setSiteContent]      = useState(() => load('ma_site_content', DEFAULT_SITE_CONTENT));
+  const [suspendedClients, setSuspendedClients] = useState(() => load('ma_suspended_clients', []));
   const [currentClient, setCurrentClient] = useState(() => {
     try { return JSON.parse(localStorage.getItem('ma_client') || 'null'); }
     catch { return null; }
@@ -198,7 +219,9 @@ export function AppProvider({ children }) {
   useEffect(() => { localStorage.setItem('ma_notifications',  JSON.stringify(notifications));      }, [notifications]);
   useEffect(() => { localStorage.setItem('ma_pro_delays',    JSON.stringify(proDelays));          }, [proDelays]);
   useEffect(() => { localStorage.setItem('ma_client',        JSON.stringify(currentClient));       }, [currentClient]);
-  useEffect(() => { localStorage.setItem('ma_admin_notifs',  JSON.stringify(adminNotifications)); }, [adminNotifications]);
+  useEffect(() => { localStorage.setItem('ma_admin_notifs',     JSON.stringify(adminNotifications)); }, [adminNotifications]);
+  useEffect(() => { localStorage.setItem('ma_site_content',     JSON.stringify(siteContent));      }, [siteContent]);
+  useEffect(() => { localStorage.setItem('ma_suspended_clients', JSON.stringify(suspendedClients)); }, [suspendedClients]);
 
   /* ── Supabase hydration — fetch direct, sans migration demo ─── */
   useEffect(() => {
@@ -448,6 +471,41 @@ export function AppProvider({ children }) {
     const rv = getProReviews(proId);
     if (!rv.length) return 0;
     return rv.reduce((s, r) => s + r.rating, 0) / rv.length;
+  }
+
+  /* ── Site content (CMS) ── */
+  function updateSiteContent(updates) {
+    setSiteContent(prev => ({ ...prev, ...updates }));
+  }
+
+  /* ── Reviews admin ── */
+  function deleteReview(id) {
+    setReviews(prev => prev.filter(r => r.id !== id));
+    sync(() => dbDeleteReview(id));
+  }
+  function toggleReviewHidden(id) {
+    setReviews(prev => prev.map(r => r.id === id ? { ...r, hidden: !r.hidden } : r));
+  }
+
+  /* ── Clients (suspend/unsuspend — liste locale) ── */
+  function suspendClient(email) {
+    setSuspendedClients(prev => prev.includes(email) ? prev : [...prev, email]);
+  }
+  function unsuspendClient(email) {
+    setSuspendedClients(prev => prev.filter(e => e !== email));
+  }
+
+  /* ── Booking update complet (admin) ── */
+  function updateBookingFull(id, updates) {
+    setBookings(prev => prev.map(b => b.id === id ? { ...b, ...updates } : b));
+    if (isSupabaseEnabled && supabase) {
+      const row = {};
+      if (updates.status    !== undefined) row.status     = updates.status;
+      if (updates.date      !== undefined) row.date       = updates.date;
+      if (updates.startTime !== undefined) row.start_time = updates.startTime;
+      if (updates.endTime   !== undefined) row.end_time   = updates.endTime;
+      supabase.from('bookings').update(row).eq('id', id).catch(e => console.error('[db] updateBookingFull:', e));
+    }
   }
 
   /* ── Admin ── */
@@ -737,7 +795,10 @@ export function AppProvider({ children }) {
     incrementViews,
     getProBySlug, getProById,
     book, cancelBooking, isSlotTaken, getProBookings,
-    addReview, getProReviews, avgRating,
+    addReview, getProReviews, avgRating, deleteReview, toggleReviewHidden,
+    siteContent, updateSiteContent,
+    suspendedClients, suspendClient, unsuspendClient,
+    updateBookingFull,
     // Smart Time™
     notifications, proDelays,
     updateBookingStatus,

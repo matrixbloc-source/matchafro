@@ -59,6 +59,7 @@ const HEADLINE = [
 ];
 
 function Hero() {
+  const { siteContent: sc } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchCity,  setSearchCity]  = useState('');
 
@@ -106,7 +107,7 @@ function Hero() {
         >
           <span style={{ height: 1, width: 40, background: BRONZE, display: 'inline-block' }} />
           <span style={{ fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.2em', color: DEEP }}>
-            La beauté afro, sur rendez-vous
+            {sc?.heroEyebrow || 'La beauté afro, sur rendez-vous'}
           </span>
         </motion.div>
 
@@ -149,8 +150,7 @@ function Hero() {
           transition={{ duration: 0.7, ease: EASE, delay: 0.7 }}
           style={{ marginTop: 28, maxWidth: 580, fontSize: 18, lineHeight: 1.6, color: 'rgba(11,11,12,0.6)' }}
         >
-          Tresses, locks, perruques, barber, maquillage et onglerie près de chez vous.
-          Des artisans vérifiés, une réservation en quelques secondes.
+          {sc?.heroSubtitle || 'Tresses, locks, perruques, barber, maquillage et onglerie près de chez vous. Des artisans vérifiés, une réservation en quelques secondes.'}
         </motion.p>
 
         {/* Search bar */}
@@ -230,17 +230,17 @@ function Hero() {
           style={{ marginTop: 80, display: 'flex', gap: 40, alignItems: 'center', flexWrap: 'wrap', fontSize: 14, color: 'rgba(11,11,12,0.45)' }}
         >
           <span>
-            <b style={{ fontFamily: F, fontSize: 18, fontWeight: 500, color: INK, marginRight: 6 }}>5 000+</b>
+            <b style={{ fontFamily: F, fontSize: 18, fontWeight: 500, color: INK, marginRight: 6 }}>{sc?.statArtisans || '5 000+'}</b>
             artisans vérifiés
           </span>
           <span className="trust-sep" style={{ height: 16, width: 1, background: LINE }} />
           <span>
-            <b style={{ fontFamily: F, fontSize: 18, fontWeight: 500, color: INK, marginRight: 6 }}>12</b>
+            <b style={{ fontFamily: F, fontSize: 18, fontWeight: 500, color: INK, marginRight: 6 }}>{sc?.statPays || '12'}</b>
             pays couverts
           </span>
           <span className="trust-sep" style={{ height: 16, width: 1, background: LINE }} />
           <span>
-            <b style={{ fontFamily: F, fontSize: 18, fontWeight: 500, color: INK, marginRight: 6 }}>4,9/5</b>
+            <b style={{ fontFamily: F, fontSize: 18, fontWeight: 500, color: INK, marginRight: 6 }}>{sc?.statNote || '4,9/5'}</b>
             note moyenne
           </span>
         </motion.div>
@@ -268,6 +268,11 @@ function ArrowIcon() {
 }
 
 function Categories() {
+  const { siteContent: sc } = useApp();
+  const cats = CATS.map(c => ({
+    ...c,
+    img: sc?.['catImg' + c.slug.charAt(0).toUpperCase() + c.slug.slice(1)] || c.img,
+  }));
   return (
     <section id="categories" style={{ padding: 'clamp(72px,9vw,112px) clamp(20px,5vw,40px)' }}>
       <style>{`
@@ -291,17 +296,17 @@ function Categories() {
               transition={{ duration: 0.7, ease: EASE }}
               style={{ fontFamily: F, fontWeight: 500, letterSpacing: '-0.04em', lineHeight: 1.1, fontSize: 'clamp(32px,4vw,48px)', maxWidth: 560, color: INK, margin: 0 }}
             >
-              Un savoir-faire pour chaque style.
+              {sc?.categoriesTitle || 'Un savoir-faire pour chaque style.'}
             </motion.h2>
           </div>
           <p style={{ maxWidth: 280, fontSize: 15, lineHeight: 1.6, color: 'rgba(11,11,12,0.55)' }}>
-            Six familles de prestations, des centaines d'artisans spécialisés. Trouvez la main experte qu'il vous faut.
+            {sc?.categoriesSubtitle || "Six familles de prestations, des centaines d'artisans spécialisés. Trouvez la main experte qu'il vous faut."}
           </p>
         </div>
 
         {/* Grid */}
         <div className="grid3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
-          {CATS.map((cat, i) => (
+          {cats.map((cat, i) => (
             <motion.div
               key={cat.name}
               initial={{ opacity: 0, y: 28 }}
@@ -351,7 +356,7 @@ function Categories() {
 
 /* ─── 3. FEATURED ────────────────────────────────────────────────────── */
 function Featured() {
-  const { pros, avgRating } = useApp();
+  const { pros, avgRating, siteContent: sc } = useApp();
 
   const featured = pros
     .filter(p => p.active !== false && !p.suspended && p.slug)
@@ -391,7 +396,7 @@ function Featured() {
               transition={{ duration: 0.7, ease: EASE }}
               style={{ fontFamily: F, fontWeight: 500, letterSpacing: '-0.04em', lineHeight: 1.1, fontSize: 'clamp(32px,4vw,48px)', maxWidth: 560, color: INK, margin: 0 }}
             >
-              Les artisans les plus demandés.
+              {sc?.featuredTitle || 'Les artisans les plus demandés.'}
             </motion.h2>
           </div>
           <a href="#calendrier" onClick={e => { e.preventDefault(); document.getElementById('calendrier')?.scrollIntoView({ behavior: 'smooth' }); }} style={{ fontSize: 14, fontWeight: 500, color: INK, textDecoration: 'none' }}>
@@ -505,6 +510,12 @@ const STEPS = [
 ];
 
 function HowItWorks() {
+  const { siteContent: sc } = useApp();
+  const steps = [
+    { n: '01', title: sc?.step1Title || 'Rechercher', body: sc?.step1Body || STEPS[0].body },
+    { n: '02', title: sc?.step2Title || 'Réserver',   body: sc?.step2Body || STEPS[1].body },
+    { n: '03', title: sc?.step3Title || 'Profiter',   body: sc?.step3Body || STEPS[2].body },
+  ];
   return (
     <section id="etapes" style={{ padding: 'clamp(72px,9vw,112px) clamp(20px,5vw,40px)' }}>
       <style>{`
@@ -525,12 +536,12 @@ function HowItWorks() {
             transition={{ duration: 0.7, ease: EASE }}
             style={{ fontFamily: F, fontWeight: 500, letterSpacing: '-0.04em', lineHeight: 1.1, fontSize: 'clamp(32px,4vw,48px)', color: INK, margin: 0 }}
           >
-            Trois étapes, zéro friction.
+            {sc?.howItWorksTitle || 'Trois étapes, zéro friction.'}
           </motion.h2>
         </div>
 
         <div className="steps-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 1, border: `1px solid ${LINE}`, borderRadius: 24, overflow: 'hidden', background: LINE }}>
-          {STEPS.map((step, i) => (
+          {steps.map((step, i) => (
             <motion.div
               key={step.n}
               className="step-cell"

@@ -301,6 +301,12 @@ export async function dbInsertReview(review) {
   if (error) console.error('[db] insertReview:', error.message);
 }
 
+export async function dbDeleteReview(id) {
+  if (!supabase) return;
+  const { error } = await supabase.from('reviews').delete().eq('id', id);
+  if (error) console.error('[db] deleteReview:', error.message);
+}
+
 export async function dbUpdateReview(id, fields) {
   if (!supabase) return;
   const row = {};
